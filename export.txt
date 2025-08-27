@@ -1,0 +1,2 @@
+export LD_LIBRARY_PATH=/home/tranthingocdiep/Desktop/vinfast/integrate_trt/3rdparty/cudnn89/lib64:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/home/tranthingocdiep/Desktop/vinfast/integrate_trt/3rdparty/tensorrt/targets/x86_64-linux-gnu/lib:$LD_LIBRARY_PATH
