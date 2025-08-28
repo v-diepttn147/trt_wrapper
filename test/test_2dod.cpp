@@ -92,10 +92,18 @@ int main(int argc, char** argv) {
             std::cerr << "Failed to read image\n";
             return 3;
         }
-        auto t0 = std::chrono::high_resolution_clock::now();
-        detector.infer(img, results);
-        auto t1 = std::chrono::high_resolution_clock::now();
-        std::cout << "Avg latency: " <<  std::chrono::duration<double, std::milli>(t1 - t0).count() << std::endl;
+        double msTotal = 0.0;
+        for (int i = 0; i < runs; ++i) {
+            auto t0 = std::chrono::high_resolution_clock::now();
+            detector.infer(img, results);
+            auto t1 = std::chrono::high_resolution_clock::now();
+            msTotal += std::chrono::duration<double, std::milli>(t1 - t0).count();
+        }
+        std::cout << "Avg latency: " << (msTotal / runs) << " ms over " << runs << " run(s)\n";
+        // auto t0 = std::chrono::high_resolution_clock::now();
+        // detector.infer(img, results);
+        // auto t1 = std::chrono::high_resolution_clock::now();
+        // std::cout << "Avg latency: " <<  std::chrono::duration<double, std::milli>(t1 - t0).count() << std::endl;
 
 
         return 0;

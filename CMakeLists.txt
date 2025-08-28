@@ -19,17 +19,25 @@ find_package(Threads REQUIRED)
 find_package(CUDAToolkit REQUIRED)
 
 # ---------- TensorRT (prebuilt in 3rdparty) ----------
-set(TENSORRT_ROOT         ${CMAKE_SOURCE_DIR}/3rdparty/tensorrt)
+set(TENSORRT_ROOT         ${CMAKE_SOURCE_DIR}/3rdparty/TensorRT-10.4.0.26)
 set(TENSORRT_INCLUDE_DIR  ${TENSORRT_ROOT}/include)
-set(TENSORRT_LIBRARY_DIR  ${TENSORRT_ROOT}/targets/x86_64-linux-gnu/lib)
+set(TENSORRT_LIBRARY_DIR  ${TENSORRT_ROOT}/lib)
 
 # Core libs: add nvinfer (you missed this), plugins, parsers
+# set(TENSORRT_LIBRARIES
+#     ${TENSORRT_LIBRARY_DIR}/libnvinfer.so
+#     ${TENSORRT_LIBRARY_DIR}/libnvinfer_plugin.so
+#     ${TENSORRT_LIBRARY_DIR}/libnvinfer_vc_plugin.so
+#     ${TENSORRT_LIBRARY_DIR}/libnvonnxparser.so
+#     ${TENSORRT_LIBRARY_DIR}/libnvparsers.so
+# )
 set(TENSORRT_LIBRARIES
-    ${TENSORRT_LIBRARY_DIR}/libnvinfer.so
+    # ${TENSORRT_LIBRARY_DIR}/libnvinfer_dispatch.so
     ${TENSORRT_LIBRARY_DIR}/libnvinfer_plugin.so
+    # ${TENSORRT_LIBRARY_DIR}/libnvinfer_lean.so
     ${TENSORRT_LIBRARY_DIR}/libnvinfer_vc_plugin.so
+    ${TENSORRT_LIBRARY_DIR}/libnvinfer.so
     ${TENSORRT_LIBRARY_DIR}/libnvonnxparser.so
-    ${TENSORRT_LIBRARY_DIR}/libnvparsers.so
 )
 
 # ---------- CuDNN (prebuilt in 3rdparty) ----------

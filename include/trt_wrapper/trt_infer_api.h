@@ -3,6 +3,26 @@
 #include <vector>
 #include <NvInfer.h>
 
+class Logger : public nvinfer1::ILogger {
+public:
+    explicit Logger(Severity sev = Severity::kWARNING) : threshold_(sev) {}
+    void setSeverity(Severity sev) { threshold_ = sev; }
+
+    void log(Severity s, const char* msg) noexcept override {
+        if (s <= threshold_) {
+            const char* tag =
+                (s == Severity::kINTERNAL_ERROR) ? "INTERNAL" :
+                (s == Severity::kERROR)          ? "ERROR"    :
+                (s == Severity::kWARNING)        ? "WARN"     :
+                (s == Severity::kINFO)           ? "INFO"     :
+                (s == Severity::kVERBOSE)        ? "VERBOSE"  : "UNK";
+            std::fprintf(stderr, "[TRT][%s] %s\n", tag, msg);
+        }
+    }
+private:
+    Severity threshold_;
+};
+
 class TRTInferAPI {
 public:
     explicit TRTInferAPI(const std::string& modelPath,
@@ -33,10 +53,7 @@ private:
     static size_t volume_(const nvinfer1::Dims& d);
 
     // TRT objects
-    class Logger : public nvinfer1::ILogger {
-    public:
-        void log(Severity s, const char* msg) noexcept override;
-    } logger_;
+    Logger logger_{nvinfer1::ILogger::Severity::kVERBOSE};
 
     nvinfer1::IRuntime*           runtime_  = nullptr;
     nvinfer1::ICudaEngine*        engine_   = nullptr;
@@ -48,6 +65,7 @@ private:
 
     // Device buffers for bindings (simple case: 1 in, 1 out)
     std::vector<void*> deviceBindings_;
+    std::vector<std::string> ioNames_;
     int inputIndex_  = -1;
     int outputIndex_ = -1;
 };
