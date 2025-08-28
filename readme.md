@@ -2,7 +2,7 @@
 
 - CuDNN (8.9)
 - OpenCV
-- TensorRT (8.6.1)
+- TensorRT (10.4)
 - cuda
 
 # Run
