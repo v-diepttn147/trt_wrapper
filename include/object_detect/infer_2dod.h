@@ -33,5 +33,9 @@ private:
     TRTInferAPI* trt_infer_;
     nvinfer1::Dims inDims;
     nvinfer1::Dims outDims;
+    std::vector<std::string> classes_{{"car", "person", "motorcycle"}};
+    float confidence_threshold = 0.1f;
+    float iou_threshold = 0.1f;
+    float resize_scale_;
 };
 }

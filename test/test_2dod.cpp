@@ -35,6 +35,7 @@ int main(int argc, char** argv) {
         const std::string modelPath = argv[1];
         const std::string imgPath = argv[2];
         const int runs = (argc >= 4) ? std::max(1, std::stoi(argv[3])) : 1;
+        std::vector<std::string> classes_{{"car", "person", "motorcycle"}};
 
         // // Build/Load engine. We disable FP16 so inputs remain FP32 for this simple test.
         // TRTInferAPI trt(modelPath, /*enableFP16=*/false, /*workspaceMB=*/10240);
@@ -104,6 +105,23 @@ int main(int argc, char** argv) {
         // detector.infer(img, results);
         // auto t1 = std::chrono::high_resolution_clock::now();
         // std::cout << "Avg latency: " <<  std::chrono::duration<double, std::milli>(t1 - t0).count() << std::endl;
+
+        // visualize results
+        for (const auto& r : results) {
+            cv::rectangle(img, 
+                          cv::Rect(r.box.x, r.box.y, r.box.width, r.box.height), 
+                          cv::Scalar(0, 255, 0), 2);
+            const std::string label = classes_[r.class_id] + ": " + std::to_string(r.confidence);
+            int baseline = 0;
+            const auto label_size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseline);
+            cv::rectangle(img, 
+                          cv::Point(r.box.x, r.box.y - label_size.height - baseline),
+                          cv::Point(r.box.x + label_size.width, r.box.y),
+                          cv::Scalar(0, 255, 0), cv::FILLED);
+            cv::putText(img, label, cv::Point(r.box.x, r.box.y - baseline), 
+                        cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0), 1);
+        }
+        cv::imwrite("result.png", img);
 
 
         return 0;
