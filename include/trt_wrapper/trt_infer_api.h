@@ -18,6 +18,9 @@ public:
 
     nvinfer1::Dims getInputDims(int idx = 0) const;
     nvinfer1::Dims getOutputDims(int idx = 0) const;
+    void* getDeviceInputBuffer(int idx = 0)  const;
+    void* getDeviceOutputBuffer(int idx = 0) const;
+    bool enqueueOn(cudaStream_t stream = nullptr);
 private:
     // Build/Load
     void buildFromOnnx_(const std::string& onnxPath, bool fp16, size_t workspaceMB);

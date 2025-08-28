@@ -173,6 +173,40 @@ void TRTInferAPI::allocBindings_() {
         throw std::runtime_error("Could not identify input/output bindings");
 }
 
+void* TRTInferAPI::getDeviceInputBuffer(int idx) const {
+    int count = -1;
+    for (int i = 0; i < engine_->getNbBindings(); ++i) {
+        if (engine_->bindingIsInput(i) && engine_->isExecutionBinding(i)) {
+            ++count;
+            if (count == idx) return deviceBindings_[i];
+        }
+    }
+    return nullptr;
+}
+void* TRTInferAPI::getDeviceOutputBuffer(int idx) const {
+    int count = -1;
+    for (int i = 0; i < engine_->getNbBindings(); ++i) {
+        if (!engine_->bindingIsInput(i) && engine_->isExecutionBinding(i)) {
+            ++count;
+            if (count == idx) return deviceBindings_[i];
+        }
+    }
+    return nullptr;
+}
+
+bool TRTInferAPI::enqueueOn(cudaStream_t stream) {
+    // If no stream passed, create a short-lived one
+    if (!stream) {
+        cudaStream_t s{};
+        if (cudaStreamCreate(&s) != cudaSuccess) return false;
+        bool ok = context_->enqueueV2(deviceBindings_.data(), s, nullptr);
+        cudaStreamSynchronize(s);
+        cudaStreamDestroy(s);
+        return ok;
+    }
+    return context_->enqueueV2(deviceBindings_.data(), stream, nullptr);
+}
+
 void TRTInferAPI::infer(const void* hostInput, size_t inputBytes,
                         void* hostOutput, size_t outputBytes)
 {

@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 3.20)
-project(integrate_trt LANGUAGES CXX)
-
-# Global defaults
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CUDA_ARCHITECTURES 86)
+set(CMAKE_CUDA_STANDARD 14)
+set(CMAKE_CUDA_HOST_COMPILER /usr/bin/g++-10)
+set(CMAKE_CXX_COMPILER /usr/bin/g++-10)
+set(CMAKE_CUDA_COMPILER /usr/local/cuda-11.8/bin/nvcc)
+
+project(integrate_trt LANGUAGES CXX CUDA)
+
+# Global defaults
+
+# set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(OpenCV REQUIRED)
 find_package(Threads REQUIRED)
@@ -41,6 +48,7 @@ set(CUDNN_LIBRARIES
 # ---------- Project library ----------
 add_library(integrate_trt SHARED
     ${CMAKE_CURRENT_SOURCE_DIR}/src/trt_wrapper/trt_infer_api.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/trt_wrapper/preprocess_cuda.cu
     ${CMAKE_CURRENT_SOURCE_DIR}/src/object_detect/infer_2dod.cpp
 )
 
